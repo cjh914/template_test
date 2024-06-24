@@ -3,6 +3,8 @@ import sys
 import cv2 as cv
 
 import os ## 추가한 모듈
+from PIL import Image
+import numpy as np
 
 use_mask = False
 img = None
@@ -23,11 +25,11 @@ def main(argv):
         return -1
 
     
-    # global img
+    global img
     global templ
     # img = cv.imread(sys.argv[1], cv.IMREAD_COLOR)
     # templ = cv.imread(sys.argv[2], cv.IMREAD_COLOR)
-    templ = cv.imread('C:\\tm\\img_test\\img_1.jpg', cv.IMREAD_COLOR)
+    templ = cv.imread('C:\\tm\\img_test\\tem_img.jpg', cv.IMREAD_COLOR)
     
 
     if (len(sys.argv) > 3):
@@ -43,7 +45,8 @@ def main(argv):
     
 
 ## --------------------------------------------------------------------------- ##
-    # 검색할 디렉토리 설정 -> 추가한 코드
+    # 검색할 디렉토리 설정 및 반복문으로 순회 -> 추가한 코드
+
     # search_directory = "C:\\Users\\HWAN\\Downloads\\"
     # img_paths = []
     # # 디렉토리 순회, .jpg 파일 찾기
@@ -52,11 +55,12 @@ def main(argv):
     #         if file.lower().endswith('.jpg'):
     #             img_paths.append(os.path.join(root, file))           
 
-    for root, dirs, files in os.walk("C:\\Users\\HWAN\\Downloads\\"):
+    for root, files in os.walk("C:\\Users\\HWAN\\Downloads\\"):
         for file in files:
             if file.lower().endswith('.jpg'):
                 img_path = os.path.join(root, file)
                 img = cv.imread(img_path, cv.IMREAD_COLOR)
+                
 
 
 ## ----------------------------------------------------------------------------- ##
@@ -67,9 +71,11 @@ def main(argv):
     
 
     
-    trackbar_label = 'Method: \n 0: SQDIFF \n 1: SQDIFF NORMED \n 2: TM CCORR \n 3: TM CCORR NORMED \n 4: TM COEFF \n 5: TM COEFF NORMED'
+    # trackbar_label = 'Method: \n 0: SQDIFF \n 1: SQDIFF NORMED \n 2: TM CCORR \n 3: TM CCORR NORMED \n 4: TM COEFF \n 5: TM COEFF NORMED'
+    trackbar_label = 'SQDIFF'
     cv.createTrackbar( trackbar_label, image_window, match_method, max_Trackbar, MatchingMethod )
     
+
 
     MatchingMethod(match_method)
 
@@ -87,7 +93,7 @@ def MatchingMethod(param):
     img_display = img.copy()
     
     
-    method_accepts_mask = (cv.TM_SQDIFF == match_method or match_method == cv.TM_CCORR_NORMED)
+    method_accepts_mask = (cv.TM_SQDIFF == match_method , match_method == cv.TM_CCORR_NORMED)
     if (use_mask and method_accepts_mask):
         result = cv.matchTemplate(img, templ, match_method, None, mask)
     else:
